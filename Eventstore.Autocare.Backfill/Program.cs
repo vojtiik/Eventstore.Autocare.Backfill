@@ -10,7 +10,8 @@ using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 using Newtonsoft.Json;
 
-namespace Eventstore.Autocare.Backfill  
+
+namespace Eventstore.Autocare.Backfill
 {
     public class Program
     {
@@ -19,14 +20,14 @@ namespace Eventstore.Autocare.Backfill
             string esIP = ConfigurationManager.AppSettings.Get("eventstoreIP"); // 1113
             var esPort = int.Parse(ConfigurationManager.AppSettings.Get("eventStorePort")); //IPAddress.Loopback;
             var ip = IPAddress.Parse(esIP);
-             var settings = ConnectionSettings.Create();
-             settings
-                 .UseConsoleLogger()
-                 .SetDefaultUserCredentials(new UserCredentials(
-                     ConfigurationManager.AppSettings.Get("eventstoreUsr"),
-                     ConfigurationManager.AppSettings.Get("eventstorePass")));
+            var settings = ConnectionSettings.Create();
+            settings
+                .UseConsoleLogger()
+                .SetDefaultUserCredentials(new UserCredentials(
+                    ConfigurationManager.AppSettings.Get("eventstoreUsr"),
+                    ConfigurationManager.AppSettings.Get("eventstorePass")));
             var connection = EventStoreConnection.Create(settings.Build(), new IPEndPoint(ip, esPort));
-        
+
             connection.ConnectAsync().Wait();
             string streamname = ConfigurationManager.AppSettings.Get("stream"); // "backfillauto6";
             string sourcePath = ConfigurationManager.AppSettings.Get("path"); // @"d:\autocare_backfill\";
@@ -89,17 +90,20 @@ namespace Eventstore.Autocare.Backfill
             return autocares;
         }
 
-        public static List<EventData> BuildEventData(List<UserAutoCared> autocareData)
+        public static List<EventData> BuildEventData(List<UserAutoCared> autocareDataList)
         {
             var events = new List<EventData>();
 
-            foreach (var autocaredata in autocareData)
+            var serializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.None };
+            foreach (var autocaredata in autocareDataList)
             {
+                var data = JsonConvert.SerializeObject(autocaredata, serializerSettings);
+
                 var myEvent = new EventData(
                          Guid.NewGuid(),
                          "GG.Care.WriteConcern.Messages.V3.UserAutoCared",
-                         false,
-                         Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(autocaredata)),
+                         true,
+                         Encoding.UTF8.GetBytes(data),
                          null);
 
                 events.Add(myEvent);
@@ -108,19 +112,30 @@ namespace Eventstore.Autocare.Backfill
             return events;
         }
 
-        public class UserAutoCared
+        static byte[] GetBytes(string str)
         {
-            public UserAutoCared()
-            {
-                EventDate = DateTime.UtcNow;
-            }
-
-            public Guid UserId { get; set; }
-            public string EntityId { get; set; }
-            public string EntityType { get; set; }
-            public DateTime EventDate { get; set; }
-            public string SourceEntityId { get; set; }
-            public string SourceEntityType { get; set; }
+            byte[] bytes = new byte[str.Length * sizeof(char)];
+            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
+            return bytes;
         }
+
     }
+
+    public class UserAutoCared
+    {
+        public UserAutoCared()
+        {
+            EventDate = DateTime.UtcNow;
+        }
+
+        public Guid UserId { get; set; }
+        public string EntityId { get; set; }
+        public string EntityType { get; set; }
+        public DateTime EventDate { get; set; }
+        public string SourceEntityId { get; set; }
+        public string SourceEntityType { get; set; }
+    }
+
+
+
 }
