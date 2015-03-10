@@ -43,21 +43,22 @@ namespace Eventstore.Autocare.Backfill
                 {
                     autocareData = ReadEventsFromFile(fileIndex, filePathAndName);
                     Console.WriteLine("Completed read from sourcefile with  index : " + fileIndex);
-                    Console.WriteLine(autocareData.Count + "  autocared events found.");
+                    Console.WriteLine(autocareData.Count + " autocared events found.");
                     fileIndex++;
 
                 }
                 catch (FileNotFoundException fnf)
                 {
-
-                    Console.WriteLine("Is this the last file index ? " + fileIndex);
+                    Console.WriteLine("File not found / backfill completed. Last processed index: " + fileIndex);
                     Console.WriteLine(fnf.ToString());
+                    Console.ReadLine();
                     break;
                 }
 
                 catch (Exception e)
                 {
                     Console.WriteLine(e.ToString());
+                    Console.ReadLine();
                     // quit
                     break;
                 }
@@ -111,14 +112,6 @@ namespace Eventstore.Autocare.Backfill
 
             return events;
         }
-
-        static byte[] GetBytes(string str)
-        {
-            byte[] bytes = new byte[str.Length * sizeof(char)];
-            System.Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
-
     }
 
     public class UserAutoCared
