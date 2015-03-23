@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Eventstore.Autocare.Backfill.GG.Care.WriteConcern.Messages.V3;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 using Newtonsoft.Json;
@@ -114,19 +115,48 @@ namespace Eventstore.Autocare.Backfill
         }
     }
 
-    public class UserAutoCared
+    namespace GG.Care.WriteConcern.Messages.V3
     {
-        public UserAutoCared()
+        public class UserStartedCaring
         {
-            EventDate = DateTime.UtcNow;
+            public UserStartedCaring()
+            {
+                EventDate = DateTime.Now;
+            }
+
+            public Guid UserId { get; set; }
+            public string EntityId { get; set; }
+            public string EntityType { get; set; }
+            public DateTime EventDate { get; set; }
+        }
+        public class UserAutoCared
+        {
+            public UserAutoCared()
+            {
+                EventDate = DateTime.UtcNow;
+            }
+
+            public Guid UserId { get; set; }
+            public string EntityId { get; set; }
+            public string EntityType { get; set; }
+            public DateTime EventDate { get; set; }
+            public string SourceEntityId { get; set; }
+            public string SourceEntityType { get; set; }
         }
 
-        public Guid UserId { get; set; }
-        public string EntityId { get; set; }
-        public string EntityType { get; set; }
-        public DateTime EventDate { get; set; }
-        public string SourceEntityId { get; set; }
-        public string SourceEntityType { get; set; }
+        public class UserStoppedCaring
+        {
+            public UserStoppedCaring()
+            {
+                EventDate = DateTime.Now;
+            }
+
+            public Guid UserId { get; set; }
+            public string EntityId { get; set; }
+            public string EntityType { get; set; }
+            public DateTime EventDate { get; set; }
+        }
+
     }
 
 
