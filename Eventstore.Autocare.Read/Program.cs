@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
 using GG.Care.WriteConcern.Messages.V3;
@@ -39,12 +40,40 @@ namespace Eventstore.Autocare.Read
 
             var resolvedEvents = new List<ResolvedEvent>(5000000);
             var resolvedEvents2 = new List<ResolvedEvent>(5000000);
-            
+
             while (true)
             {
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("Reading from {0} stream. Position {1}", streamname, start);
+                Console.ResetColor();
 
-                StreamEventsSlice slice = ReadNextEventsFromEventstore(settings, ep, streamname, start);
 
+                StreamEventsSlice slice = null;
+                int retry = 0;
+                while (retry < 10)
+                {
+                    try
+                    {
+                        slice = ReadNextEventsFromEventstore(settings, ep, streamname, start);
+                        break;
+                    }
+                    catch (Exception e)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("read slice failed,  retry in 1s , retry #: {0}", retry  );
+                        Console.ResetColor();
+                        retry++;
+                        Thread.Sleep(1000);
+                    }
+                }
+
+                if (slice == null)
+                {
+                    throw new Exception("failed to read from ES");
+                }
+
+
+                // split them into two 
                 if (start > 3000000)
                 {
                     resolvedEvents.AddRange(slice.Events);
@@ -65,9 +94,9 @@ namespace Eventstore.Autocare.Read
                 }
             }
 
-            resolvedEvents.AddRange(resolvedEvents2);
+            resolvedEvents2.AddRange(resolvedEvents);
 
-            var result = TranslateEventsToStorageFormat(resolvedEvents);
+            var result = TranslateEventsToStorageFormat(resolvedEvents2);
             AppendToFile(filePathAndName, result);
             Console.WriteLine("Append to {0} completed.", filePathAndName);
 
@@ -75,13 +104,14 @@ namespace Eventstore.Autocare.Read
 
         }
 
-        private static string plainCareStringName = "care";
+        private static string plainCareStringName = "Care";
 
         private static List<AzureTableStorageFormat> TranslateEventsToStorageFormat(List<ResolvedEvent> events)
         {
             var output = new Dictionary<string, AzureTableStorageFormat>(1000000);
             var v1v2counter = 0;
-            Console.WriteLine("Deserializing events. ( . = 100k)");
+            var democharitycounter = 0;
+            Console.WriteLine("Deserializing events. ( . = 10k)");
             int progressCounter = 0;
             foreach (var ev in events)
             {
@@ -108,6 +138,11 @@ namespace Eventstore.Autocare.Read
                         {
                             continue;
                         }
+                        if (careV3.EntityId.Equals("2050"))
+                        {
+                            democharitycounter++;
+                            continue;
+                        }
 
                         // care is always more important, remove and re-add 
                         output.Remove(careV3.UserId + careV3.EntityId);
@@ -127,6 +162,12 @@ namespace Eventstore.Autocare.Read
                             continue;
                         }
 
+                        if (uncare.EntityId.Equals("2050"))
+                        {
+                            democharitycounter++;
+                            continue;
+                        }
+
                         output.Remove(uncare.UserId + uncare.EntityId);
                         break;
 
@@ -134,6 +175,12 @@ namespace Eventstore.Autocare.Read
                         var autocareV3 = JsonConvert.DeserializeObject<UserAutoCared>(stringobject);
                         if (autocareV3.EntityType != "charity")
                         {
+                            continue;
+                        }
+
+                        if (autocareV3.EntityId.Equals("2050"))
+                        {
+                            democharitycounter++;
                             continue;
                         }
 
@@ -156,7 +203,7 @@ namespace Eventstore.Autocare.Read
                                 UserGuid = userGuid,
                                 CharityId = autocareV3.EntityId,
                                 ReasonId = autocareV3.SourceEntityId,
-                                ReasonType = autocareV3.SourceEntityType
+                                ReasonType = autocareV3.SourceEntityType == "Donation" ? "AutocaredDueToDonation" : "AutocaredDueToPageCreation"
                             });
 
                         break;
@@ -167,18 +214,20 @@ namespace Eventstore.Autocare.Read
             }
 
             Console.WriteLine("V1V2 messages found: " + v1v2counter);
-
+            Console.WriteLine("Demo charities found: " + democharitycounter);
+            Console.WriteLine("Usercares prepared: " + output.Count());
             return output.Values.ToList();
         }
 
-        public static StreamEventsSlice ReadNextEventsFromEventstore(ConnectionSettingsBuilder settings, IPEndPoint ep,string streamName, int start)
+        public static StreamEventsSlice ReadNextEventsFromEventstore(ConnectionSettingsBuilder settings, IPEndPoint ep, string streamName, int start)
         {
-           var connection = EventStoreConnection.Create(settings.Build(), ep);
+            var connection = EventStoreConnection.Create(settings.Build(), ep);
             connection.ConnectAsync().Wait();
-            
-            var result = connection.ReadStreamEventsForwardAsync(streamName, start, 200000, false).Result;
-         
+
+            var result = connection.ReadStreamEventsForwardAsync(streamName, start, 30000, false).Result;
+
             connection.Close();
+
             return result;
         }
 
