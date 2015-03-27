@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventstore.Autocare.EventsG
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Autocare.Backfill.TableStorage.Writter", "Autocare.Backfill.TableStorage.Writter\Autocare.Backfill.TableStorage.Writter.csproj", "{8AF9F353-001B-4827-93E8-7D6D6CB13F10}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventstore.Autocare.Read.Donations", "Eventstore.Autocare.Read.Donations\Eventstore.Autocare.Read.Donations.csproj", "{C5ECB6E9-DF76-4714-8750-1EE42A949D15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eventstore.Autocare.Read.Cares", "Eventstore.Autocare.Read.Cares\Eventstore.Autocare.Read.Cares.csproj", "{FBBD2D62-E894-4199-A560-5B3C865F0CBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +72,28 @@ Global
 		{8AF9F353-001B-4827-93E8-7D6D6CB13F10}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8AF9F353-001B-4827-93E8-7D6D6CB13F10}.Release|x64.ActiveCfg = Release|Any CPU
 		{8AF9F353-001B-4827-93E8-7D6D6CB13F10}.Release|x64.Build.0 = Release|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Release|x64.ActiveCfg = Release|Any CPU
+		{C5ECB6E9-DF76-4714-8750-1EE42A949D15}.Release|x64.Build.0 = Release|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Release|x64.ActiveCfg = Release|Any CPU
+		{FBBD2D62-E894-4199-A560-5B3C865F0CBD}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

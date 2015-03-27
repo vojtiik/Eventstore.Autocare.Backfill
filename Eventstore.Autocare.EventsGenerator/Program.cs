@@ -36,26 +36,12 @@ namespace Eventstore.Autocare.EventsGenerator
             var users = new[] { Guid.NewGuid(), Guid.NewGuid() };
 
 
-            var events = BuildAutoCareForUser(users, "2");
-            AppendToEventStore(connection, streamname, events).Wait();
-            Console.WriteLine("{0} events appended to the {1} stream.", events.Count(), streamname);
-
-            events = BuildAutoCareForUser(users, "1");
-            AppendToEventStore(connection, streamname, events).Wait();
-            Console.WriteLine("{0} events appended to the {1} stream.", events.Count(), streamname);
-
-            events = BuildUnCareForUser(users, "1");
-            AppendToEventStore(connection, streamname, events).Wait();
-            Console.WriteLine("{0} events appended to the {1} stream.", events.Count(), streamname);
-
-            events = BuildCareForUser(users, "2");
-            AppendToEventStore(connection, streamname, events).Wait();
-            Console.WriteLine("{0} events appended to the {1} stream.", events.Count(), streamname);
-
-
-            //events = BuildCareForUser(users, "1");
+            //var events = BuildUnCareForUser(users, "1");
             //AppendToEventStore(connection, streamname, events).Wait();
             //Console.WriteLine("{0} events appended to the {1} stream.", events.Count(), streamname);
+            var events = BuildCareForUser(users, "1");
+            AppendToEventStore(connection, streamname, events).Wait();
+            Console.WriteLine("{0} events appended to the {1} stream.", events.Count(), streamname);
 
             Console.WriteLine("Done.");
             Console.ReadLine();
@@ -106,7 +92,7 @@ namespace Eventstore.Autocare.EventsGenerator
                 {
                     EntityId = Guid.NewGuid().ToString(),
                     EntityType = "charity",
-                    SourceEntityType = Guid.NewGuid().ToString(),
+                    SourceEntityType = "Donation",
                     SourceEntityId = Guid.NewGuid().ToString(),
                     UserId = Guid.NewGuid(),
                 };
